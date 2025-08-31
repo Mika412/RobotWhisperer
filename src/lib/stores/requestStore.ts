@@ -4,6 +4,7 @@ import {
   type RosRequest,
   type RequestType,
 } from "$lib/db";
+import { closeItem, openItem } from './workspaceStore';
 
 export const requests = writable<RosRequest[]>([]);
 
@@ -31,6 +32,8 @@ export async function addRequest() {
       ...currentRequests,
       { ...newRequest, id },
     ]);
+
+    openItem(id);
   } catch (error) {
     console.error("Failed to add request:", error);
   }
@@ -48,6 +51,8 @@ export async function deleteRequest(id: number) {
     requests.update((currentRequests) =>
       currentRequests.filter((req) => req.id !== id),
     );
+
+    closeItem(id);
   } catch (error) {
     console.error(`Failed to delete request with id ${id}:`, error);
   }

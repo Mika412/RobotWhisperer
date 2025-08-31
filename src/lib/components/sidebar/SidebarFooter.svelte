@@ -1,10 +1,10 @@
 <script lang="ts">
     import { PowerOff, Settings, Share2 } from "@lucide/svelte";
+    import { modalStore } from "$lib/stores/modalStore.svelte";
+    import SettingsModal from "$lib/components/modals/SettingsModal.svelte";
 </script>
 
-<div
-    class="flex-shrink-0 p-2 pt-4 border-t border-border flex items-center gap-2"
->
+<div class="flex-shrink-0 p-2 pt-4 border-t border-border flex items-center gap-2">
     <button
         class="h-10 flex-grow flex items-center justify-center gap-2.5 text-sm px-2.5 rounded-lg font-semibold transition-colors bg-red-500/20 text-red-300 hover:bg-red-500/30"
     >
@@ -12,6 +12,7 @@
     </button>
 
     <button
+        onclick={() => modalStore.open(SettingsModal)}
         title="Settings"
         class="h-10 w-10 flex items-center justify-center rounded-lg bg-bg-main border border-border hover:bg-bg-hover text-text-dimmer hover:text-text-main transition-colors"
     >

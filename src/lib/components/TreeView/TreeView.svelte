@@ -1,39 +1,26 @@
 <script lang="ts">
-    import { Plus } from "@lucide/svelte";
-    import {
-        requests,
-        addRequest,
-    } from "$lib/stores/requestStore";
+    import { Plus, Inbox } from "@lucide/svelte";
+    import { requests, addRequest } from "$lib/stores/requestStore";
     import RequestItem from "./RequestItem.svelte";
     import type { RosRequest } from "$lib/db";
-
-    const handleAddRequest = () => {
-        addRequest();
-    };
 
     const handleOpenTab = (request: RosRequest) => {
         if (request.id) {
             // openTab(request.id);
         }
     };
-
-    const typeStyles: Record<string, string> = {
-        topic: "text-blue-400",
-        service: "text-purple-400",
-        action: "text-green-400",
-    };
 </script>
 
 <div class="px-2">
     <div class="mb-2 flex items-center justify-between px-2">
         <h2
-            class="text-sm font-semibold uppercase tracking-wider text-gray-400"
+            class="text-sm font-semibold uppercase tracking-wider text-text-dimmer"
         >
             Requests
         </h2>
         <button
-            on:click={handleAddRequest}
-            class="rounded p-1 text-gray-400 hover:bg-gray-700 hover:text-white"
+            onclick={addRequest}
+            class="rounded p-1 text-text-dimmer hover:bg-bg-hover hover:text-text-main transition-colors"
             title="Create new request"
         >
             <Plus class="h-5 w-5" />
@@ -44,9 +31,18 @@
         {#each $requests as request (request.id)}
             <RequestItem {request} />
         {:else}
-            <li class="px-2 py-4 text-center text-xs text-gray-500">
-                No requests yet.
-            </li>
+            <div class="text-center py-8 px-4 text-text-disabled">
+                <Inbox class="mx-auto h-10 w-10 mb-2" />
+                <p class="font-semibold text-sm text-text-main mb-2">
+                    No Requests Yet
+                </p>
+                <p class="text-xs">
+                    Click the <kbd
+                        class="px-1.5 py-0.5 text-xs rounded bg-bg-main border border-border"
+                        >+</kbd
+                    > button above to create one.
+                </p>
+            </div>
         {/each}
     </ul>
 </div>

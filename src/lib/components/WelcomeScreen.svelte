@@ -1,5 +1,7 @@
 <script lang="ts">
     import { Bot, FilePlus } from "@lucide/svelte";
+
+    import { requests, addRequest } from '$lib/stores/requestStore';
 </script>
 
 <div
@@ -17,6 +19,7 @@
         </p>
         <button
             class="bg-accent text-white px-6 py-3 rounded-lg hover:bg-accent-dark text-sm font-semibold flex items-center gap-2 mx-auto transition-colors"
+            onclick={() => addRequest()}
         >
             <FilePlus size={16} /> Create Your First Request
         </button>

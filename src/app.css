@@ -51,4 +51,18 @@
     --color-badge-action-bg: theme("colors.purple.500/10");
     --color-badge-action-text: theme("colors.purple.400");
     --color-badge-action-border: theme("colors.purple.500/30");
+
+body {
+    background-color: var(--color-bg-deep);
+}
+}
+
+.badge-topic {
+  @apply bg-[--color-badge-topic-bg] text-[--color-badge-topic-text] border-[--color-badge-topic-border];
+}
+.badge-service {
+  @apply bg-[--color-badge-service-bg] text-[--color-badge-service-text] border-[--color-badge-service-border];
+}
+.badge-action {
+  @apply bg-[--color-badge-action-bg] text-[--color-badge-action-text] border-[--color-badge-action-border];
 }

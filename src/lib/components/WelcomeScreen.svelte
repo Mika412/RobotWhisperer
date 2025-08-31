@@ -12,7 +12,7 @@
         <h2 class="text-2xl font-bold text-text-main mb-2">
             Welcome to the Robot Whisperer
         </h2>
-        <p class="max-w-md mx-auto mb-6 text-text-dimmer">
+        <p class="max-w-md mx-auto mb-6 text-text-dimmer text-center">
             Your friendly neighborhood tool for interacting with the ROS 2
             graph. Select a request from the sidebar or create a new one to
             begin.

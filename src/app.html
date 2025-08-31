@@ -5,6 +5,20 @@
         <link rel="icon" href="%sveltekit.assets%/favicon.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Robot Whisperer</title>
+        <script>
+            (function () {
+                try {
+                    const settings = JSON.parse(
+                        localStorage.getItem("settings"),
+                    );
+                    if (settings && settings.theme) {
+                        document.documentElement.className = settings.theme;
+                    }
+                } catch (e) {
+                    console.error("Could not load theme from localStorage", e);
+                }
+            })();
+        </script>
         %sveltekit.head%
     </head>
     <body data-sveltekit-preload-data="hover">

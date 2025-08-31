@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+    /* Colors (usable as bg-*, text-*, border-*) */
     --color-bg-sidebar: var(--color-bg-sidebar);
     --color-bg-main: var(--color-bg-main);
     --color-bg-deep: var(--color-bg-deep);
@@ -18,18 +19,6 @@
     --color-accent-dark: var(--color-accent-dark);
     --color-accent-light: var(--color-accent-light);
 
-    --color-badge-topic-bg: oklch(62.3% 0.214 259.815 / 10%);
-    --color-badge-topic-text: oklch(70.7% 0.165 254.624);
-    --color-badge-topic-border: oklch(62.3% 0.214 259.815 / 30%);
-
-    --color-badge-service-bg: oklch(72.3% 0.219 149.579 / 10%);
-    --color-badge-service-text: oklch(79.2% 0.209 151.711);
-    --color-badge-service-border: oklch(72.3% 0.219 149.579 /30%);
-
-    --color-badge-action-bg: oklch(62.7% 0.265 303.9 / 10%);
-    --color-badge-action-text: oklch(71.4% 0.203 305.504);
-    --color-badge-action-border: oklch(62.7% 0.265 303.9/30%);
-
     /* Fonts (usable as font-sans, font-mono) */
     --font-sans:
         Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
@@ -39,7 +28,6 @@
         "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
         "Liberation Mono", "Courier New", monospace;
 }
-
 :root,
 .dark {
     --color-bg-sidebar: #1a1d24;
@@ -55,18 +43,15 @@
     --color-accent: #00aaff;
     --color-accent-dark: #0088cc;
     --color-accent-light: #66ccff;
-
-    --color-badge-topic-bg: oklch(62.3% 0.214 259.815 / 10%);
-    --color-badge-topic-text: oklch(70.7% 0.165 254.624);
-    --color-badge-topic-border: oklch(62.3% 0.214 259.815 / 30%);
-
-    --color-badge-service-bg: oklch(72.3% 0.219 149.579 / 10%);
-    --color-badge-service-text: oklch(79.2% 0.209 151.711);
-    --color-badge-service-border: oklch(72.3% 0.219 149.579 /30%);
-
-    --color-badge-action-bg: oklch(62.7% 0.265 303.9 / 10%);
-    --color-badge-action-text: oklch(71.4% 0.203 305.504);
-    --color-badge-action-border: oklch(62.7% 0.265 303.9/30%);
+    --color-badge-topic-bg: theme("colors.blue.500/10");
+    --color-badge-topic-text: theme("colors.blue.400");
+    --color-badge-topic-border: theme("colors.blue.500/30");
+    --color-badge-service-bg: theme("colors.green.500/10");
+    --color-badge-service-text: theme("colors.green.400");
+    --color-badge-service-border: theme("colors.green.500/30");
+    --color-badge-action-bg: theme("colors.purple.500/10");
+    --color-badge-action-text: theme("colors.purple.400");
+    --color-badge-action-border: theme("colors.purple.500/30");
 }
 
 .light {
@@ -83,16 +68,15 @@
     --color-accent: #0077cc;
     --color-accent-dark: #005fa3;
     --color-accent-light: #3399e6;
-
-    --color-badge-topic-bg: oklch(62.3% 0.214 259.815 / 10%);
-    --color-badge-topic-text: oklch(54.6% 0.245 262.881);
-    --color-badge-topic-border: oklch(62.3% 0.214 259.815 / 30%);
-    --color-badge-service-bg: oklch(72.3% 0.219 149.579 / 10%);
-    --color-badge-service-text: oklch(62.7% 0.194 149.214);
-    --color-badge-service-border: oklch(72.3% 0.219 149.579 / 30%);
-    --color-badge-action-bg: oklch(62.7% 0.265 303.9 / 10%);
-    --color-badge-action-text: oklch(55.8% 0.288 302.321);
-    --color-badge-action-border: oklch(62.7% 0.265 303.9 / 30%);
+    --color-badge-topic-bg: theme("colors.blue.500/10");
+    --color-badge-topic-text: theme("colors.blue.600");
+    --color-badge-topic-border: theme("colors.blue.500/30");
+    --color-badge-service-bg: theme("colors.green.500/10");
+    --color-badge-service-text: theme("colors.green.600");
+    --color-badge-service-border: theme("colors.green.500/30");
+    --color-badge-action-bg: theme("colors.purple.500/10");
+    --color-badge-action-text: theme("colors.purple.600");
+    --color-badge-action-border: theme("colors.purple.500/30");
 }
 
 .one-dark {
@@ -225,19 +209,11 @@ body {
 }
 
 .badge-topic {
-    background-color: var(--color-badge-topic-bg);
-    color: var(--color-badge-topic-text);
-    border-color: var(--color-badge-topic-border);
+  @apply bg-[--color-badge-topic-bg] text-[--color-badge-topic-text] border-[--color-badge-topic-border];
 }
-
 .badge-service {
-    background-color: var(--color-badge-service-bg);
-    color: var(--color-badge-service-text);
-    border-color: var(--color-badge-service-border);
+  @apply bg-[--color-badge-service-bg] text-[--color-badge-service-text] border-[--color-badge-service-border];
 }
-
 .badge-action {
-    background-color: var(--color-badge-action-bg);
-    color: var(--color-badge-action-text);
-    border-color: var(--color-badge-action-border);
+  @apply bg-[--color-badge-action-bg] text-[--color-badge-action-text] border-[--color-badge-action-border];
 }

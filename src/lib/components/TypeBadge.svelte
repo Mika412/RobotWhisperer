@@ -14,7 +14,6 @@
 		}
 	}
 
-	// New function to return hard-coded labels
 	function getBadgeLabel(tag?: string) {
 		switch (tag) {
 			case 'topic':
@@ -27,6 +26,7 @@
 				return 'GEN'; // A fallback for any other type
 		}
 	}
+	
 </script>
 
 {#if type}

@@ -1,5 +1,5 @@
 import { writable, derived, get } from "svelte/store";
-import { requests } from "$lib/stores/requestStore";
+import { requests, updateRequest } from "$lib/stores/requestStore";
 import type { RosRequest } from "$lib/db";
 
 export interface WorkspaceItem {
@@ -16,6 +16,26 @@ export const activeItem = derived(
     return $openItems.find((item) => item.id === $activeItemId) ?? null;
   },
 );
+
+/**
+ * Updates a specific field of the active item's data and marks it as dirty.
+ * @param field - The key of the data object to update.
+ * @param value - The new value for the field.
+ */
+export function updateActiveItemField(field: keyof RosRequest, value: any) {
+	openItems.update((items) => {
+		const activeId = get(activeItemId);
+		return items.map((item) => {
+			if (item.id === activeId) {
+				// Create a new data object with the updated field to ensure reactivity
+				const newData = { ...item.data, [field]: value };
+				return { ...item, data: newData, isDirty: true };
+			}
+			return item;
+		});
+	});
+}
+
 
 /**
  * Opens a request in the workspace.
@@ -57,3 +77,24 @@ export function closeItem(itemId: number) {
     activeItemId.set(remainingItems.length > 0 ? remainingItems[0].id : null);
   }
 }
+
+/**
+ * Saves the changes from the active workspace item back to the database.
+ */
+export async function saveActiveItem() {
+	const itemToSave = get(activeItem);
+	if (!itemToSave || !itemToSave.isDirty) return;
+
+	await updateRequest(itemToSave.data);
+
+	// After saving, mark the item as not dirty anymore
+	openItems.update((items) =>
+		items.map((item) => {
+			if (item.id === itemToSave.id) {
+				return { ...item, isDirty: false };
+			}
+			return item;
+		}),
+	);
+}
+

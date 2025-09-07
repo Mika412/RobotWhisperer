@@ -4,12 +4,13 @@
     import TreeView from "$lib/components/TreeView/TreeView.svelte";
 </script>
 
-<div class="flex flex-col w-80 bg-bg-sidebar p-2 border-r border-border">
+<div class="h-dvh flex flex-col w-80 bg-bg-sidebar p-2 border-r border-border">
     <SidebarHeader />
 
-    <div class="flex-grow overflow-y-auto">
+    <div class="flex-grow flex-nowrap overflow-y-auto">
         <TreeView />
     </div>
-
-    <SidebarFooter />
+    <div class="flex-none">
+        <SidebarFooter />
+    </div>
 </div>

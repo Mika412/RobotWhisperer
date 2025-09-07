@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Bot, FilePlus } from "@lucide/svelte";
 
-    import { requests, addRequest } from '$lib/stores/requestStore';
+    import { addRequest } from "$lib/stores/requestStore";
 </script>
 
 <div
-    class="flex flex-col items-center justify-center h-full text-text-disabled bg-bg-deep p-8"
+    class="flex flex-col items-center justify-center h-full text-text-disabled bg-bg-main p-8"
 >
     <div class="text-center">
         <Bot size={64} class="mx-auto text-accent mb-4" strokeWidth={1.5} />

@@ -40,6 +40,31 @@ export async function addRequest() {
 }
 
 /**
+ * Updates an existing request in the database and the store.
+ * @param requestData - The full request object to update (must include id).
+ */
+export async function updateRequest(requestData: RosRequest) {
+  if (!requestData.id) {
+    throw new Error("Cannot update request without an ID.");
+  }
+
+  try {
+    // Use 'put' which updates an existing item or adds it if it doesn't exist.
+    await db.requests.put(requestData);
+
+    // Update the master list of requests in the store
+    requests.update((currentRequests) =>
+      currentRequests.map((req) =>
+        req.id === requestData.id ? requestData : req
+      )
+    );
+  } catch (error) {
+    console.error(`Failed to update request with id ${requestData.id}:`, error);
+    throw error;
+  }
+}
+
+/**
  * Deletes a request from the database and then removes it from the store.
  * @param id - The ID of the request to delete.
  */

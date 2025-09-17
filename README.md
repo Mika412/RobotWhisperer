@@ -7,10 +7,14 @@ This application is built with Svelte 5 and Tauri, allowing it to be deployed as
 > [!NOTE]
 > **Try it now!** You can test the web version of Robot Whisperer at: [https://ros.heroicwaffle.dev/](https://ros.heroicwaffle.dev/)
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gIAcZNAULus?si=aW42mACC1Zfi230H" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gIAcZNAULus" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<!-- 
 <p align="center">
     <img src="./images/themed_robot_whisperer.png" alt="Robot Whisperer Screenshot" width="600"/>
 </p>
-
+ -->
 
 
 

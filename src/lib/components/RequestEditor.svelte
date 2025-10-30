@@ -14,6 +14,7 @@
 	} from "$lib/stores/workspaceStore";
 	import { deleteRequest } from "$lib/stores/requestStore";
 	import type { RosRequest } from "$lib/db";
+	import Dropdown from "$lib/components/common/Dropdown.svelte";
 
 	const specifics = {
 		topic: {
@@ -33,31 +34,41 @@
 		},
 	};
 
-	function getBadgeClass(tag?: string) {
-		switch (tag) {
+	const requestTypeOptions = [
+		{ key: "topic", name: "TOPIC" },
+		{ key: "service", name: "SERVICE" },
+		{ key: "action", name: "ACTION" },
+	];
+
+	function getBadgeClass(type: string) {
+		switch (type) {
 			case "topic":
-				return "badge-topic";
+				return "badge-topic font-bold uppercase text-sm";
 			case "service":
-				return "badge-service";
+				return "badge-service font-bold uppercase text-sm";
 			case "action":
-				return "badge-action";
+				return "badge-action font-bold uppercase text-sm";
 			default:
-				return "bg-gray-500/10 text-gray-400 border-gray-500/30";
+				return "bg-gray-500/10 text-gray-400 border-gray-500/30 font-bold uppercase text-sm";
 		}
 	}
 
-	function getRingClass(tag?: string) {
-		switch (tag) {
-			case "topic":
-				return "focus:ring-2 focus:ring-blue-400/50";
-			case "service":
-				return "focus:ring-2 focus:ring-green-400/50";
-			case "action":
-				return "focus:ring-2 focus:ring-purple-400/50";
-			default:
-				return "focus:ring-2 focus:ring-gray-400/50";
+	// Create a local state that syncs with the store
+	let localRequestType = $state($activeItem?.data.type ?? "topic");
+
+	// Watch for changes from the dropdown and update the store
+	$effect(() => {
+		if (localRequestType !== $activeItem?.data.type) {
+			updateActiveItemField("type", localRequestType as RosRequest["type"]);
 		}
-	}
+	});
+
+	// Watch for changes from the store and update local state
+	$effect(() => {
+		if ($activeItem?.data.type && $activeItem.data.type !== localRequestType) {
+			localRequestType = $activeItem.data.type;
+		}
+	});
 </script>
 
 {#if $activeItem}
@@ -98,21 +109,15 @@
 			<div
 				class="flex items-center gap-2 bg-bg-input border border-border rounded-lg p-1"
 			>
-				<select
-					value={$activeItem.data.type}
-					onchange={(e) =>
-						updateActiveItemField(
-							"type",
-							e.currentTarget.value as RosRequest["type"],
-						)}
-					class="font-bold border rounded-md px-3 py-2.5 focus:outline-none transition-colors uppercase text-sm disabled:opacity-50 disabled:cursor-not-allowed {getBadgeClass(
-						$activeItem.data.type,
-					)} {getRingClass($activeItem.data.type)}"
-				>
-					<option value="topic">Topic</option>
-					<option value="service">Service</option>
-					<option value="action">Action</option>
-				</select>
+				<div class="flex-shrink-0 w-28">
+					<Dropdown
+						options={requestTypeOptions}
+						bind:selected={localRequestType}
+						buttonClass={getBadgeClass(localRequestType)}
+						showFocusRing={false}
+						compact={true}
+					/>
+				</div>
 				<div class="flex-grow">
 					<input
 						type="text"
@@ -128,7 +133,9 @@
 						$activeItem.data.target.trim() === ""}
 					class="text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 font-semibold text-sm transition-colors mr-1 w-36 bg-green-500/80 hover:bg-green-500 disabled:bg-bg-disabled disabled:text-text-disabled disabled:cursor-not-allowed"
 				>
-					<svelte:component this={spec.Icon} size={16} />
+					{#if spec.Icon}
+						<spec.Icon size={16} />
+					{/if}
 					{spec.actionText}
 				</button>
 			</div>

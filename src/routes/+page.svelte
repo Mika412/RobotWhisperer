@@ -11,7 +11,7 @@
     <div class="flex-none">
         <Sidebar />
     </div>
-    <main class="flex-1 w-dvw">
+    <main class="flex-1 min-w-0">
         {#if $openItems.length === 0}
             <WelcomeScreen />
         {:else}

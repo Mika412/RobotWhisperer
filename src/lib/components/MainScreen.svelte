@@ -3,7 +3,7 @@
 	import RequestEditor from './RequestEditor.svelte';
 </script>
 
-<main class="flex flex-1 flex-col overflow-hidden bg-gray-900">
+<main class="flex flex-1 flex-col overflow-hidden bg-gray-900 min-w-0">
 	<TabBar />
 	<div class="flex-grow overflow-hidden">
 		<RequestEditor />

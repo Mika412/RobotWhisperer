@@ -7,7 +7,7 @@
 <div class="h-dvh flex flex-col w-80 bg-bg-sidebar p-2 border-r border-border">
     <SidebarHeader />
 
-    <div class="flex-grow flex-nowrap overflow-y-auto">
+    <div class="flex-grow flex-nowrap overflow-y-auto scrollbar-custom">
         <TreeView />
     </div>
     <div class="flex-none">

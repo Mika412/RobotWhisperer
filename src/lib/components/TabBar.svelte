@@ -7,17 +7,30 @@
 	} from "$lib/stores/workspaceStore";
 	import TypeBadge from "$lib/components/TypeBadge.svelte";
 
+	let tabBarElement: HTMLDivElement;
+
 	const handleClose = (e: MouseEvent, id: number | undefined) => {
 		e.stopPropagation();
 		if (id) {
 			closeItem(id);
 		}
 	};
+
+	const handleWheel = (e: WheelEvent) => {
+		if (tabBarElement) {
+			e.preventDefault();
+			tabBarElement.scrollLeft += e.deltaY;
+		}
+	};
 </script>
 
-<div class="flex border-b border-border bg-bg-sidebar">
-	<div class="flex items-center overflow-x-auto">
-		<div class="flex space-x-1 p-1">
+<div
+	bind:this={tabBarElement}
+	onwheel={handleWheel}
+	class="w-full border-b border-border bg-bg-sidebar overflow-x-auto scrollbar-custom pb-2"
+>
+	<div class="inline-flex items-center min-w-max">
+		<div class="flex space-x-1 pt-1 px-1">
 			{#each $openItems as item (item.id)}
 				{@const isActive = $activeItemId === item.id}
 				<div

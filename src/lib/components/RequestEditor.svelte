@@ -36,13 +36,26 @@
 	function getBadgeClass(tag?: string) {
 		switch (tag) {
 			case "topic":
-				return "badge-topic focus:ring-[var(--color-badge-topic-text)]/50";
+				return "badge-topic";
 			case "service":
-				return "badge-service focus:ring-[var(--color-badge-service-text)]/50";
+				return "badge-service";
 			case "action":
-				return "badge-action focus:ring-[var(--color-badge-action-text)]/50";
+				return "badge-action";
 			default:
-				return "bg-gray-500/10 text-gray-400 border-gray-500/30 focus:ring-gray-400/50";
+				return "bg-gray-500/10 text-gray-400 border-gray-500/30";
+		}
+	}
+
+	function getRingClass(tag?: string) {
+		switch (tag) {
+			case "topic":
+				return "focus:ring-2 focus:ring-blue-400/50";
+			case "service":
+				return "focus:ring-2 focus:ring-green-400/50";
+			case "action":
+				return "focus:ring-2 focus:ring-purple-400/50";
+			default:
+				return "focus:ring-2 focus:ring-gray-400/50";
 		}
 	}
 </script>
@@ -92,9 +105,9 @@
 							"type",
 							e.currentTarget.value as RosRequest["type"],
 						)}
-					class="font-bold border rounded-md px-3 py-2.5 focus:outline-none focus:ring-2 transition-colors uppercase text-sm {getBadgeClass(
+					class="font-bold border rounded-md px-3 py-2.5 focus:outline-none transition-colors uppercase text-sm disabled:opacity-50 disabled:cursor-not-allowed {getBadgeClass(
 						$activeItem.data.type,
-					)} disabled:opacity-50 disabled:cursor-not-allowed"
+					)} {getRingClass($activeItem.data.type)}"
 				>
 					<option value="topic">Topic</option>
 					<option value="service">Service</option>

@@ -43,15 +43,15 @@
     --color-accent: #00aaff;
     --color-accent-dark: #0088cc;
     --color-accent-light: #66ccff;
-    --color-badge-topic-bg: theme("colors.blue.500/10");
-    --color-badge-topic-text: theme("colors.blue.400");
-    --color-badge-topic-border: theme("colors.blue.500/30");
-    --color-badge-service-bg: theme("colors.green.500/10");
-    --color-badge-service-text: theme("colors.green.400");
-    --color-badge-service-border: theme("colors.green.500/30");
-    --color-badge-action-bg: theme("colors.purple.500/10");
-    --color-badge-action-text: theme("colors.purple.400");
-    --color-badge-action-border: theme("colors.purple.500/30");
+    --color-badge-topic-bg: rgba(59, 130, 246, 0.1);
+    --color-badge-topic-text: rgb(96, 165, 250);
+    --color-badge-topic-border: rgba(59, 130, 246, 0.3);
+    --color-badge-service-bg: rgba(34, 197, 94, 0.1);
+    --color-badge-service-text: rgb(74, 222, 128);
+    --color-badge-service-border: rgba(34, 197, 94, 0.3);
+    --color-badge-action-bg: rgba(168, 85, 247, 0.1);
+    --color-badge-action-text: rgb(192, 132, 252);
+    --color-badge-action-border: rgba(168, 85, 247, 0.3);
 }
 
 .light {
@@ -68,15 +68,15 @@
     --color-accent: #0077cc;
     --color-accent-dark: #005fa3;
     --color-accent-light: #3399e6;
-    --color-badge-topic-bg: theme("colors.blue.500/10");
-    --color-badge-topic-text: theme("colors.blue.600");
-    --color-badge-topic-border: theme("colors.blue.500/30");
-    --color-badge-service-bg: theme("colors.green.500/10");
-    --color-badge-service-text: theme("colors.green.600");
-    --color-badge-service-border: theme("colors.green.500/30");
-    --color-badge-action-bg: theme("colors.purple.500/10");
-    --color-badge-action-text: theme("colors.purple.600");
-    --color-badge-action-border: theme("colors.purple.500/30");
+    --color-badge-topic-bg: rgba(59, 130, 246, 0.1);
+    --color-badge-topic-text: rgb(37, 99, 235);
+    --color-badge-topic-border: rgba(59, 130, 246, 0.3);
+    --color-badge-service-bg: rgba(34, 197, 94, 0.1);
+    --color-badge-service-text: rgb(22, 163, 74);
+    --color-badge-service-border: rgba(34, 197, 94, 0.3);
+    --color-badge-action-bg: rgba(168, 85, 247, 0.1);
+    --color-badge-action-text: rgb(147, 51, 234);
+    --color-badge-action-border: rgba(168, 85, 247, 0.3);
 }
 
 .one-dark {
@@ -209,11 +209,17 @@ body {
 }
 
 .badge-topic {
-  @apply bg-[--color-badge-topic-bg] text-[--color-badge-topic-text] border-[--color-badge-topic-border];
+  background-color: var(--color-badge-topic-bg);
+  color: var(--color-badge-topic-text);
+  border-color: var(--color-badge-topic-border);
 }
 .badge-service {
-  @apply bg-[--color-badge-service-bg] text-[--color-badge-service-text] border-[--color-badge-service-border];
+  background-color: var(--color-badge-service-bg);
+  color: var(--color-badge-service-text);
+  border-color: var(--color-badge-service-border);
 }
 .badge-action {
-  @apply bg-[--color-badge-action-bg] text-[--color-badge-action-text] border-[--color-badge-action-border];
+  background-color: var(--color-badge-action-bg);
+  color: var(--color-badge-action-text);
+  border-color: var(--color-badge-action-border);
 }

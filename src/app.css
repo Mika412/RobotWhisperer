@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "tailwind-scrollbar";
 
 @theme {
     /* Colors (usable as bg-*, text-*, border-*) */
@@ -18,6 +19,10 @@
     --color-accent: var(--color-accent);
     --color-accent-dark: var(--color-accent-dark);
     --color-accent-light: var(--color-accent-light);
+
+    --color-scrollbar-track: var(--color-scrollbar-track);
+    --color-scrollbar-thumb: var(--color-scrollbar-thumb);
+    --color-scrollbar-thumb-hover: var(--color-scrollbar-thumb-hover);
 
     /* Fonts (usable as font-sans, font-mono) */
     --font-sans:
@@ -52,6 +57,9 @@
     --color-badge-action-bg: rgba(168, 85, 247, 0.1);
     --color-badge-action-text: rgb(192, 132, 252);
     --color-badge-action-border: rgba(168, 85, 247, 0.3);
+    --color-scrollbar-track: #1a1d24;
+    --color-scrollbar-thumb: #3a404d;
+    --color-scrollbar-thumb-hover: #4a5060;
 }
 
 .light {
@@ -77,6 +85,9 @@
     --color-badge-action-bg: rgba(168, 85, 247, 0.1);
     --color-badge-action-text: rgb(147, 51, 234);
     --color-badge-action-border: rgba(168, 85, 247, 0.3);
+    --color-scrollbar-track: #e5e7eb;
+    --color-scrollbar-thumb: #9ca3af;
+    --color-scrollbar-thumb-hover: #6b7280;
 }
 
 .one-dark {
@@ -102,6 +113,9 @@
     --color-badge-action-bg: #d19a6620;
     --color-badge-action-text: #d19a66;
     --color-badge-action-border: #d19a6640;
+    --color-scrollbar-track: #1e2127;
+    --color-scrollbar-thumb: #3a3f4b;
+    --color-scrollbar-thumb-hover: #4d5363;
 }
 
 .dracula {
@@ -127,6 +141,9 @@
     --color-badge-action-bg: #ffb86c20;
     --color-badge-action-text: #ffb86c;
     --color-badge-action-border: #ffb86c40;
+    --color-scrollbar-track: #191a21;
+    --color-scrollbar-thumb: #44475a;
+    --color-scrollbar-thumb-hover: #5a5f7a;
 }
 
 .nord {
@@ -152,6 +169,9 @@
     --color-badge-action-bg: #ebcb8b20;
     --color-badge-action-text: #ebcb8b;
     --color-badge-action-border: #ebcb8b40;
+    --color-scrollbar-track: #292e39;
+    --color-scrollbar-thumb: #434c5e;
+    --color-scrollbar-thumb-hover: #5a6278;
 }
 
 .solarized-light {
@@ -177,6 +197,9 @@
     --color-badge-action-bg: #cb4b1620;
     --color-badge-action-text: #cb4b16;
     --color-badge-action-border: #cb4b1640;
+    --color-scrollbar-track: #eee8d5;
+    --color-scrollbar-thumb: #93a1a1;
+    --color-scrollbar-thumb-hover: #657b83;
 }
 
 .rose-pine-dawn {
@@ -202,6 +225,9 @@
     --color-badge-action-bg: #d7827e20;
     --color-badge-action-text: #d7827e;
     --color-badge-action-border: #d7827e40;
+    --color-scrollbar-track: #f2e9e1;
+    --color-scrollbar-thumb: #9893a5;
+    --color-scrollbar-thumb-hover: #797593;
 }
 
 body {
@@ -222,4 +248,19 @@ body {
   background-color: var(--color-badge-action-bg);
   color: var(--color-badge-action-text);
   border-color: var(--color-badge-action-border);
+}
+
+/* Custom scrollbar styles - Cross-browser compatible */
+.scrollbar-custom {
+  /* Firefox - using auto width to better match Webkit */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+  scrollbar-gutter: auto;
+}
+
+/* Horizontal scrollbar variant - overlays content to prevent layout shift */
+.scrollbar-custom-overlay-x {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scrollbar-thumb) transparent;
 }

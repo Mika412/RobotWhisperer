@@ -157,7 +157,7 @@
 			</div>
 		</div>
 
-		<div class="p-4 overflow-y-auto flex-grow">
+		<div class="p-4 overflow-y-auto flex-grow scrollbar-custom">
 			<div class="space-y-3">
 				<h3 class="text-sm font-semibold text-text-dimmer mb-2">
 					Message Fields

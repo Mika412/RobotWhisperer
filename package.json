@@ -16,7 +16,8 @@
     "@lucide/svelte": "^0.542.0",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
-    "dexie": "^4.2.0"
+    "dexie": "^4.2.0",
+    "tailwind-scrollbar": "^4.0.2"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.6",

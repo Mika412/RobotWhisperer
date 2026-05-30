@@ -1,0 +1,15 @@
+[package]
+name = "rw-codec-cdr"
+version = "0.1.0"
+edition.workspace = true
+description = "CDR codec between ROS 2 wire bytes and canonical values"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+proptest = "1"

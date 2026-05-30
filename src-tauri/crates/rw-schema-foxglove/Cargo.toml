@@ -1,0 +1,13 @@
+[package]
+name = "rw-schema-foxglove"
+version = "0.1.0"
+edition.workspace = true
+description = "Parse Foxglove concatenated schemas into canonical schemas"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+rw-schema-ros2 = { path = "../rw-schema-ros2" }
+thiserror = { workspace = true }

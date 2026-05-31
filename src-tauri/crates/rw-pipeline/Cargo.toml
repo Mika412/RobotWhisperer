@@ -1,0 +1,34 @@
+[package]
+name = "rw-pipeline"
+version = "0.1.0"
+edition.workspace = true
+description = "Pipeline orchestration and subscription fan-out"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+rw-core = { path = "../rw-core", default-features = false }
+rw-session = { path = "../rw-session" }
+rw-transport = { path = "../rw-transport" }
+rw-transport-dummy = { path = "../rw-transport-dummy" }
+rw-transport-foxglove-ws = { path = "../rw-transport-foxglove-ws" }
+rw-transport-rosbridge = { path = "../rw-transport-rosbridge" }
+rw-wire = { path = "../rw-wire" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+tokio = { workspace = true, features = ["rt", "rt-multi-thread", "macros", "sync", "time"] }
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+tokio = { workspace = true, features = ["rt", "macros", "sync", "time"] }
+wasm-bindgen-futures = "0.4"
+uuid = { version = "1", features = ["v4", "serde", "js"] }
+getrandom = { version = "0.2", features = ["js"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "sync", "time"] }

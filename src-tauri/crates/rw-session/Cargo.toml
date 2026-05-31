@@ -1,0 +1,31 @@
+[package]
+name = "rw-session"
+version = "0.1.0"
+edition.workspace = true
+description = "Session layer that fans out shared topic subscriptions"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+rw-transport = { path = "../rw-transport" }
+async-trait = "0.1"
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+tokio = { workspace = true, features = ["rt", "rt-multi-thread", "macros", "sync", "time"] }
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+tokio = { workspace = true, features = ["rt", "macros", "sync", "time"] }
+wasm-bindgen-futures = "0.4"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time", "sync"] }
+async-trait = "0.1"
+
+[target.'cfg(not(target_family = "wasm"))'.dev-dependencies]
+rw-transport-foxglove-ws = { path = "../rw-transport-foxglove-ws" }

@@ -1,0 +1,23 @@
+[package]
+name = "rw-transport-dummy"
+version = "0.1.0"
+edition.workspace = true
+description = "Offline dummy transport for development and tests"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+rw-transport = { path = "../rw-transport" }
+async-trait = "0.1"
+serde_json = { workspace = true }
+tracing = { workspace = true }
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+tokio = { workspace = true, features = ["rt", "rt-multi-thread", "macros", "sync", "time"] }
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+tokio = { workspace = true, features = ["rt", "macros", "sync", "time"] }
+wasm-bindgen-futures = "0.4"
+gloo-timers = { version = "0.3", features = ["futures"] }

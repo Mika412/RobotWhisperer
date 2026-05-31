@@ -1,0 +1,25 @@
+[package]
+name = "rw-transport-rosbridge"
+version = "0.1.0"
+edition.workspace = true
+description = "rosbridge WebSocket protocol transport"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+rw-codec-json = { path = "../rw-codec-json" }
+rw-transport = { path = "../rw-transport" }
+rw-ws = { path = "../rw-ws" }
+async-trait = "0.1"
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+tokio = { workspace = true, features = ["rt", "rt-multi-thread", "macros", "sync", "time"] }
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+tokio = { workspace = true, features = ["rt", "macros", "sync", "time"] }

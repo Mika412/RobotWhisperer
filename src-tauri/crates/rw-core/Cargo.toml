@@ -1,0 +1,44 @@
+[package]
+name = "rw-core"
+version = "0.1.0"
+edition.workspace = true
+description = "Core value, schema, and visualization helpers"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+tokio = { workspace = true, features = ["sync", "macros"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+async-trait = "0.1"
+bytes = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+sha2 = "0.10"
+chrono = { version = "0.4", default-features = false, features = ["serde", "clock", "wasmbind"] }
+url = "2"
+rusqlite = { version = "0.31", features = ["bundled"], optional = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+uuid = { version = "1", features = ["v4", "serde", "js"] }
+getrandom = { version = "0.2", features = ["js"] }
+idb = { version = "0.6", optional = true }
+js-sys = { version = "0.3", optional = true }
+wasm-bindgen = { version = "0.2", optional = true }
+wasm-bindgen-futures = { version = "0.4", optional = true }
+serde-wasm-bindgen = { version = "0.6", optional = true }
+
+[dev-dependencies]
+proptest = "1"
+tempfile = "3"
+tokio = { workspace = true, features = ["macros", "rt", "rt-multi-thread", "sync", "time"] }
+
+[features]
+default = ["sqlite"]
+sqlite = ["dep:rusqlite", "tokio/rt"]
+wasm-storage = ["dep:idb", "dep:js-sys", "dep:wasm-bindgen", "dep:wasm-bindgen-futures", "dep:serde-wasm-bindgen"]
+test-support = []
+
+[dev-dependencies.rw-core]
+path = "."
+features = ["test-support"]

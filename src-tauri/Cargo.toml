@@ -1,16 +1,45 @@
+[workspace]
+members = [
+    ".",
+    "crates/rw-core",
+    "crates/rw-canonical",
+    "crates/rw-codec-cdr",
+    "crates/rw-codec-json",
+    "crates/rw-codec-rosmsg",
+    "crates/rw-schema-foxglove",
+    "crates/rw-schema-ros1",
+    "crates/rw-schema-ros2",
+    "crates/rw-session",
+    "crates/rw-transport",
+    "crates/rw-pipeline",
+    "crates/rw-wasm",
+    "crates/rw-transport-dummy",
+    "crates/rw-transport-foxglove-ws",
+    "crates/rw-transport-rosbridge",
+    "crates/rw-wire",
+    "crates/rw-ws",
+    "crates/rw-validation",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+
+[workspace.dependencies]
+tokio = { version = "1", default-features = false }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+tracing = "0.1"
+
 [package]
 name = "robot-whisperer"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Robot Whisperer, a Postman-style client for ROS"
+authors = ["Mykhaylo Marfeychuk"]
+edition.workspace = true
 
 [lib]
-# The `_lib` suffix may seem redundant but it is necessary
-# to make the lib name unique and wouldn't conflict with the bin name.
-# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
 name = "robot_whisperer_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
@@ -18,8 +47,22 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["devtools"] }
 tauri-plugin-opener = "2"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+tracing = { workspace = true }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+thiserror = { workspace = true }
 
+rw-core = { path = "crates/rw-core" }
+rw-canonical = { path = "crates/rw-canonical" }
+rw-pipeline = { path = "crates/rw-pipeline" }
+rw-transport = { path = "crates/rw-transport" }
+rw-wire = { path = "crates/rw-wire" }
+
+uuid = { version = "1", features = ["v4", "serde"] }
+
+tokio-tungstenite = "0.23"
+futures-util = "0.3"

@@ -1,0 +1,26 @@
+[package]
+name = "rw-validation"
+version = "0.1.0"
+edition.workspace = true
+description = "Cross-transport integration test host"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+tokio = { workspace = true, features = ["rt", "rt-multi-thread", "macros", "net", "time", "io-util", "sync"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "net", "time", "io-util", "sync"] }
+rw-canonical = { path = "../rw-canonical" }
+rw-transport = { path = "../rw-transport" }
+rw-transport-foxglove-ws = { path = "../rw-transport-foxglove-ws" }
+rw-transport-rosbridge = { path = "../rw-transport-rosbridge" }
+rw-wire = { path = "../rw-wire" }
+rw-pipeline = { path = "../rw-pipeline" }
+ciborium = "0.2"

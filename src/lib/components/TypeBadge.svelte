@@ -1,38 +1,21 @@
 <script lang="ts">
-	let { type }: { type?: string } = $props();
+  import type { RequestKind } from "$lib/core/types";
 
-	function getBadgeClass(tag?: string) {
-		switch (tag) {
-			case 'topic':
-				return 'badge-topic';
-			case 'service':
-				return 'badge-service';
-			case 'action':
-				return 'badge-action';
-			default:
-				return 'bg-gray-500/10 text-gray-400 border-gray-500/30';
-		}
-	}
+  let { kind }: { kind: RequestKind } = $props();
 
-	// New function to return hard-coded labels
-	function getBadgeLabel(tag?: string) {
-		switch (tag) {
-			case 'topic':
-				return 'TOP';
-			case 'service':
-				return 'SER';
-			case 'action':
-				return 'ACT';
-			default:
-				return 'GEN'; // A fallback for any other type
-		}
-	}
+  const LABELS: Record<RequestKind, string> = {
+    topic: "TOP",
+    service: "SER",
+    action: "ACT",
+    param: "PAR",
+  };
+
+  const CLASSES: Record<RequestKind, string> = {
+    topic: "badge-topic",
+    service: "badge-service",
+    action: "badge-action",
+    param: "badge-param",
+  };
 </script>
 
-{#if type}
-	<span
-		class="text-[10px] font-bold px-1.5 py-0.5 rounded-md border {getBadgeClass(type)}"
-	>
-		{getBadgeLabel(type)}
-	</span>
-{/if}
+<span class={CLASSES[kind]}>{LABELS[kind]}</span>

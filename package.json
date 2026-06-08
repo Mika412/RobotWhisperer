@@ -9,8 +9,8 @@
     "web:release": "bun run build && bun run preview",
     "build": "bun run build:wasm && RW_TARGET=web vite build",
     "build:native": "vite build",
-    "build:wasm": "cd src-tauri/crates/rw-wasm && wasm-pack build --target web --release --out-dir ../../../src/lib/wasm/generated",
-    "build:wasm:dev": "cd src-tauri/crates/rw-wasm && wasm-pack build --target web --dev --out-dir ../../../src/lib/wasm/generated",
+    "build:wasm": "wasm-pack build src-tauri/crates/rw-wasm --target web --release --out-dir ../../../src/lib/wasm/generated",
+    "build:wasm:dev": "wasm-pack build src-tauri/crates/rw-wasm --target web --dev --out-dir ../../../src/lib/wasm/generated",
     "preview": "RW_TARGET=web vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -32,7 +32,6 @@
   "dependencies": {
     "@lucide/svelte": "^0.542.0",
     "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2",
     "tailwind-scrollbar": "^4.0.2",
     "three": "^0.184.0",
     "uplot": "^1.6.32"

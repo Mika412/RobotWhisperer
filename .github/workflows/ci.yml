@@ -38,6 +38,5 @@ jobs:
           workspaces: src-tauri
       - run: cargo fmt --check
       - run: cargo clippy --workspace --all-targets -- -D warnings
-      # Enabled once the rw-* workspace and its tests land (Phase 1/10):
-      # - uses: taiki-e/install-action@nextest
-      # - run: cargo nextest run --workspace
+      - uses: taiki-e/install-action@nextest
+      - run: cargo nextest run --workspace

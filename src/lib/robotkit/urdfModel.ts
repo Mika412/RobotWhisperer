@@ -2,7 +2,7 @@ import * as THREE from "three";
 import URDFLoader, { type URDFRobot } from "urdf-loader";
 import { placeModel, type RobotScene } from "./robotScene";
 import { applyRobotMaterials } from "./robotMaterials";
-import { loadCollada, loadObj, loadStl } from "./meshLoader";
+import { loadMesh } from "./meshLoader";
 import {
   entryBaseUrl,
   entryUrdfUrl,
@@ -17,7 +17,6 @@ export function loadRobotModel(
 ): Promise<URDFRobot> {
   const loader = new URDFLoader();
   loader.packages = { [definition.directory]: entryBaseUrl(definition) };
-  loader.fetchOptions = { cache: "no-store" };
 
   let pendingMeshes = 0;
   let robot: URDFRobot | null = null;
@@ -37,21 +36,9 @@ export function loadRobotModel(
       reframeWhenSettled();
     };
     const fail = () => complete(new THREE.Object3D());
-    if (/\.dae$/i.test(path)) {
-      loadCollada(path)
-        .then((scene) => complete(scene.clone(true)))
-        .catch(fail);
-    } else if (/\.stl$/i.test(path)) {
-      loadStl(path)
-        .then((geometry) => complete(new THREE.Mesh(geometry)))
-        .catch(fail);
-    } else if (/\.obj$/i.test(path)) {
-      loadObj(path)
-        .then((geometry) => complete(new THREE.Mesh(geometry)))
-        .catch(fail);
-    } else {
-      fail();
-    }
+    loadMesh(path)
+      .then((scene) => complete(scene.clone(true)))
+      .catch(fail);
   };
 
   return new Promise<URDFRobot>((resolve, reject) => {

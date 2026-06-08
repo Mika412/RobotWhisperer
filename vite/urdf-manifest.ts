@@ -1,26 +1,17 @@
 import fs from "node:fs";
 import path from "node:path";
 
-/**
- * @param {string} directory
- * @returns {string}
- */
-function humanize(directory) {
+import type { Plugin } from "vite";
+
+function humanize(directory: string): string {
   return directory.replace(/_/g, " ").replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
-/**
- * Generates `static/assets/manifest.json` listing every robot directory that
- * contains a `.urdf`, so the frontend can discover bundled models at runtime
- * without hardcoding paths. Regenerates on asset changes during dev.
- *
- * @returns {import('vite').Plugin}
- */
-export default function urdfManifest() {
+export default function urdfManifest(): Plugin {
   const assetsDir = path.resolve("static/assets");
   const manifestPath = path.join(assetsDir, "manifest.json");
 
-  function generateManifest() {
+  function generateManifest(): void {
     if (!fs.existsSync(assetsDir)) return;
     const entries = [];
     for (const dir of fs.readdirSync(assetsDir, { withFileTypes: true })) {
@@ -31,8 +22,6 @@ export default function urdfManifest() {
       if (urdf) entries.push({ name: humanize(dir.name), directory: dir.name, urdf });
     }
     const next = JSON.stringify(entries, null, 2) + "\n";
-    // Skip the write when unchanged: rewriting bumps mtime, which Vite reads as
-    // a public-asset change and answers with a full page reload.
     if (fs.existsSync(manifestPath) && fs.readFileSync(manifestPath, "utf-8") === next) return;
     fs.writeFileSync(manifestPath, next);
   }

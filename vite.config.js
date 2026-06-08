@@ -5,7 +5,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import { sveltekit } from "@sveltejs/kit/vite";
 
-import urdfManifest from "./vite-plugin-urdf-manifest.js";
+import urdfManifest from "./vite/urdf-manifest";
+import meshOptimize from "./vite/mesh-optimize";
 
 const host = process.env.TAURI_DEV_HOST;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -40,7 +41,13 @@ const rwNativeWasmStubPlugin = isWebTarget
 
 // https://vite.dev/config/
 export default defineConfig(async () => ({
-  plugins: [rwNativeWasmStubPlugin, urdfManifest(), tailwindcss(), sveltekit()].filter(Boolean),
+  plugins: [
+    rwNativeWasmStubPlugin,
+    urdfManifest(),
+    meshOptimize(),
+    tailwindcss(),
+    sveltekit(),
+  ].filter(Boolean),
   // Build-target constant. `import.meta.env.RW_WEB` is `true` only for the web
   // shell and `false` for native. The RPC dispatch branches on this
   // compile-time constant so Vite dead-code-eliminates the wrong implementation

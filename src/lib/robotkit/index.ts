@@ -6,7 +6,7 @@ export {
   type RobotScene,
 } from "./robotScene";
 export { applyRobotMaterials } from "./robotMaterials";
-export { loadCollada, loadObj, loadStl } from "./meshLoader";
+export { loadMesh } from "./meshLoader";
 export {
   loadRobotCatalog,
   robotByDirectory,

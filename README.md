@@ -41,7 +41,7 @@ A single runtime-agnostic pipeline sits behind every transport. It keeps exactly
 
 - [Bun](https://bun.com/docs/installation)
 - [Rust](https://www.rust-lang.org/tools/install)
-- For web/WASM builds: [`wasm-pack`](https://rustwasm.github.io/wasm-pack/installer/) and the `wasm32-unknown-unknown` target (`rustup target add wasm32-unknown-unknown`)
+- For web/WASM builds: [`wasm-pack`](https://crates.io/crates/wasm-pack) (`cargo install wasm-pack`). It adds the `wasm32-unknown-unknown` target and runs `wasm-opt` for you
 - For desktop builds: the platform dependencies listed in the [Tauri prerequisites](https://tauri.app/start/prerequisites/)
 
 ### Install

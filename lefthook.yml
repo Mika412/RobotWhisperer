@@ -1,0 +1,20 @@
+pre-commit:
+  parallel: true
+  commands:
+    prettier:
+      glob: "*.{js,ts,svelte,css,json,md,html}"
+      run: bunx prettier --check {staged_files}
+    eslint:
+      glob: "*.{js,ts,svelte}"
+      run: bunx eslint {staged_files}
+    svelte-check:
+      glob: "*.{svelte,ts}"
+      run: bun run check
+    rustfmt:
+      root: "src-tauri/"
+      glob: "*.rs"
+      run: cargo fmt --check
+    clippy:
+      root: "src-tauri/"
+      glob: "*.rs"
+      run: cargo clippy --workspace --all-targets -- -D warnings

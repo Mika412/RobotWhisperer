@@ -1,0 +1,12 @@
+[package]
+name = "rw-schema-ros2"
+version = "0.1.0"
+edition.workspace = true
+description = "Parse ROS 2 message, service, and action definitions"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+thiserror = { workspace = true }

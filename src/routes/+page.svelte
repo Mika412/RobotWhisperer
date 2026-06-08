@@ -1,21 +1,40 @@
 <script lang="ts">
-    import MainScreen from "$lib/components/MainScreen.svelte";
-    import Sidebar from "$lib/components/sidebar/Sidebar.svelte";
-    import WelcomeScreen from "$lib/components/WelcomeScreen.svelte";
-    import { openItems } from "$lib/stores/workspaceStore";
+  import TopTabBar from "$lib/components/shell/TopTabBar.svelte";
+  import AppSidebar from "$lib/components/shell/AppSidebar.svelte";
+  import MainView from "$lib/components/shell/MainView.svelte";
+  import StatusBar from "$lib/components/shell/StatusBar.svelte";
+  import { fullscreenStore } from "$lib/stores/fullscreenStore.svelte";
+
+  const fullscreen = $derived(fullscreenStore.isFullscreen);
 </script>
 
-<main
-    class="flex h-screen w-full overflow-hidden text-text-main font-sans antialiased"
->
-    <div class="flex-none">
-        <Sidebar />
-    </div>
-    <main class="flex-1 min-w-0">
-        {#if $openItems.length === 0}
-            <WelcomeScreen />
-        {:else}
-            <MainScreen />
-        {/if}
-    </main>
-</main>
+<div class="app-shell">
+  {#if !fullscreen}
+    <TopTabBar />
+  {/if}
+  <div class="app-body">
+    {#if !fullscreen}
+      <AppSidebar />
+    {/if}
+    <MainView />
+  </div>
+  <StatusBar />
+</div>
+
+<style>
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    color: var(--color-text-main);
+    background: var(--color-bg-deep);
+  }
+  .app-body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    min-width: 0;
+  }
+</style>

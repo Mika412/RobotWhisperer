@@ -1,21 +1,24 @@
-import { browser } from '$app/environment';
+import { browser } from "$app/environment";
+import { DEFAULT_THEME } from "$lib/themes";
 
-function getFromStorage(key: string, defaultValue: any) {
-    if (!browser) {
-        return defaultValue;
-    }
-    const storedValue = localStorage.getItem(key);
-    if (storedValue) {
-        try {
-            return JSON.parse(storedValue);
-        } catch (e) {
-            console.error(`Error parsing localStorage key "${key}":`, e);
-            return defaultValue;
-        }
-    }
+function getFromStorage<T>(key: string, defaultValue: T): T {
+  if (!browser) {
     return defaultValue;
+  }
+  const storedValue = localStorage.getItem(key);
+  if (storedValue) {
+    try {
+      return JSON.parse(storedValue) as T;
+    } catch (error) {
+      console.error(`Error parsing localStorage key "${key}":`, error);
+      return defaultValue;
+    }
+  }
+  return defaultValue;
 }
 
-export let settings = $state(getFromStorage('settings', {
-    theme: 'dark'
-}));
+export const settings = $state(
+  getFromStorage("settings", {
+    theme: DEFAULT_THEME,
+  }),
+);

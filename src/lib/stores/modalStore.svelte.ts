@@ -1,12 +1,10 @@
-import type { SvelteComponent } from 'svelte';
+import type { Component } from "svelte";
 
-// A generic type for any Svelte component constructor
-// FIX: This is a hack that will need to be replaced
-type AnySvelteComponent = new (...args: any[]) => SvelteComponent;
+type ModalProps = Record<string, unknown>;
 
-let modal = $state({
-  component: null as AnySvelteComponent | null,
-  props: {} as Record<string, any>
+const modal = $state({
+  component: null as Component<ModalProps> | null,
+  props: {} as ModalProps,
 });
 
 export const modalStore = {
@@ -22,13 +20,13 @@ export const modalStore = {
     return modal.props;
   },
 
-  open: (component: AnySvelteComponent, props = {}) => {
-    modal.component = component;
-    modal.props = props;
+  open: <Props extends ModalProps>(component: Component<Props>, props?: Props) => {
+    modal.component = component as Component<ModalProps>;
+    modal.props = props ?? {};
   },
 
   close: () => {
     modal.component = null;
     modal.props = {};
-  }
+  },
 };

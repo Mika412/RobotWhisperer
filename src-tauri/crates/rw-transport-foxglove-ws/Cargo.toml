@@ -1,0 +1,33 @@
+[package]
+name = "rw-transport-foxglove-ws"
+version = "0.1.0"
+edition.workspace = true
+description = "Foxglove WebSocket protocol transport"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+rw-codec-cdr = { path = "../rw-codec-cdr" }
+rw-codec-rosmsg = { path = "../rw-codec-rosmsg" }
+rw-schema-foxglove = { path = "../rw-schema-foxglove" }
+rw-schema-ros2 = { path = "../rw-schema-ros2" }
+rw-transport = { path = "../rw-transport" }
+rw-ws = { path = "../rw-ws" }
+async-trait = "0.1"
+bytes = "1"
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+tokio = { workspace = true, features = ["rt", "rt-multi-thread", "macros", "sync", "time"] }
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+tokio = { workspace = true, features = ["rt", "macros", "sync", "time"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time", "sync"] }
+futures = "0.3"

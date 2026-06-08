@@ -1,172 +1,448 @@
 <script lang="ts">
-	import {
-		Save,
-		Edit2,
-		Zap,
-		Trash2,
-		Bot,
-		ArrowLeftRight,
-	} from "@lucide/svelte";
-	import {
-		activeItem,
-		saveActiveItem,
-		updateActiveItemField,
-	} from "$lib/stores/workspaceStore";
-	import { deleteRequest } from "$lib/stores/requestStore";
-	import type { RosRequest } from "$lib/db";
-	import Dropdown from "$lib/components/common/Dropdown.svelte";
+  import { Save, RotateCcw } from "@lucide/svelte";
+  import {
+    valuePreviewText,
+    type MessageDef,
+    type ParsedSchema,
+    type Value,
+    type RequestView,
+  } from "$lib/core/types";
+  import { tabsStore } from "$lib/stores/tabsStore.svelte";
+  import { requestsStore } from "$lib/stores/requestsStore.svelte";
+  import { connectionStore } from "$lib/stores/connectionStore.svelte";
+  import { discoveryStore } from "$lib/stores/discoveryStore.svelte";
+  import { subscriptionStore } from "$lib/stores/subscriptionStore.svelte";
+  import { listSchemasByName, forgetUnresolvedSchemas } from "$lib/core/schema";
+  import { pipelineHub } from "$lib/core/pipelineHub";
+  import { useTopicSource } from "$lib/visualizers/frameSource.svelte";
+  import Button from "$lib/components/common/Button.svelte";
+  import RequestBar from "$lib/components/editor/RequestBar.svelte";
+  import FormRenderer from "$lib/components/editor/FormRenderer.svelte";
+  import ResultPanel from "$lib/components/editor/ResultPanel.svelte";
+  import TopicResult from "$lib/components/editor/TopicResult.svelte";
 
-	const specifics = {
-		topic: {
-			placeholder: "topic name (e.g., /scan)",
-			actionText: "Subscribe",
-			Icon: Zap,
-		},
-		service: {
-			placeholder: "service name (e.g., /add_two_ints)",
-			actionText: "Call",
-			Icon: ArrowLeftRight,
-		},
-		action: {
-			placeholder: "action name (e.g., /fibonacci)",
-			actionText: "Send",
-			Icon: Bot,
-		},
-	};
+  let { requestId }: { requestId: number } = $props();
+  const tab = $derived(tabsStore.requestTab(requestId)!);
 
-	const requestTypeOptions = [
-		{ key: "topic", name: "TOPIC" },
-		{ key: "service", name: "SERVICE" },
-		{ key: "action", name: "ACTION" },
-	];
+  let running = $state(false);
 
-	function getBadgeClass(type: string) {
-		switch (type) {
-			case "topic":
-				return "badge-topic font-bold uppercase text-sm";
-			case "service":
-				return "badge-service font-bold uppercase text-sm";
-			case "action":
-				return "badge-action font-bold uppercase text-sm";
-			default:
-				return "bg-gray-500/10 text-gray-400 border-gray-500/30 font-bold uppercase text-sm";
-		}
-	}
+  let serviceResponse = $state("");
+  let feedbackText = $state("");
+  let resultText = $state("");
+  let goalId = $state<string | null>(null);
+  let calling = $state(false);
+  let actionError = $state<string | null>(null);
 
-	// Create a local state that syncs with the store
-	let localRequestType = $state($activeItem?.data.type ?? "topic");
+  const sessionId = $derived(
+    tab.draft.connection_id != null ? connectionStore.sessionId(tab.draft.connection_id) : null,
+  );
+  const target = $derived(tab.draft.target.trim());
+  const canRun = $derived(!!sessionId && target.length > 0);
 
-	// Watch for changes from the dropdown and update the store
-	$effect(() => {
-		if (localRequestType !== $activeItem?.data.type) {
-			updateActiveItemField("type", localRequestType as RosRequest["type"]);
-		}
-	});
+  const source = useTopicSource(
+    () => tab.draft.connection_id,
+    () => (running && tab.draft.kind === "topic" ? target : ""),
+  );
+  const rawText = $derived.by(() => {
+    if (source.value == null) return "";
+    return valuePreviewText(source.value as Value);
+  });
+  const topicStatus = $derived(source.status === "waiting" ? "connecting" : source.status);
 
-	// Watch for changes from the store and update local state
-	$effect(() => {
-		if ($activeItem?.data.type && $activeItem.data.type !== localRequestType) {
-			localRequestType = $activeItem.data.type;
-		}
-	});
+  function persistView(next: RequestView) {
+    tab.draft.visualization = next;
+    requestsStore.setVisualization(tab.requestId, next);
+  }
+  const locked = $derived((tab.draft.kind === "topic" && running) || calling);
+  const suggestions = $derived(discoveryStore.suggestions(tab.draft.connection_id, tab.draft.kind));
+  const targetSchemaName = $derived(
+    suggestions.find((entry) => entry.name === target)?.schemaName ?? null,
+  );
+
+  const connectionValue = $derived(
+    tab.draft.connection_id == null ? "" : String(tab.draft.connection_id),
+  );
+  const connectionOptions = $derived([
+    { value: "", label: "No connection" },
+    ...connectionStore.connections.map((connection) => ({
+      value: String(connection.id),
+      label: connection.name,
+    })),
+  ]);
+
+  const displayStatus = $derived(
+    tab.draft.kind === "topic" ? topicStatus : calling ? "pending" : actionError ? "error" : "idle",
+  );
+  const displaySchema = $derived(
+    tab.draft.kind === "topic"
+      ? source.schemaName || targetSchemaName || ""
+      : targetSchemaName || "",
+  );
+  const displayError = $derived(tab.draft.kind === "topic" ? source.error : actionError);
+  const dotClass = $derived(
+    displayStatus === "active" || displayStatus === "pending"
+      ? "running"
+      : displayStatus === "error"
+        ? "danger"
+        : "",
+  );
+
+  let parsedSchema = $state<ParsedSchema | null>(null);
+  $effect(() => {
+    const name = targetSchemaName;
+    if (!name) {
+      parsedSchema = null;
+      return;
+    }
+    const wantKind =
+      tab.draft.kind === "action" ? "action" : tab.draft.kind === "service" ? "service" : "message";
+    let cancelled = false;
+    void listSchemasByName(name).then((defs) => {
+      if (cancelled) return;
+      const matched = defs.find((def) => def.parsed?.kind === wantKind) ?? defs[0];
+      parsedSchema = matched?.parsed ?? null;
+    });
+    return () => {
+      cancelled = true;
+    };
+  });
+
+  const requestMessage = $derived<MessageDef | null>(
+    parsedSchema?.kind === "service" ? parsedSchema.request : null,
+  );
+  const goalMessage = $derived<MessageDef | null>(
+    parsedSchema?.kind === "action" ? parsedSchema.goal : null,
+  );
+
+  $effect(() => {
+    if (
+      (tab.draft.kind === "service" || tab.draft.kind === "action") &&
+      tab.draft.input.kind !== "struct"
+    ) {
+      tab.draft.input = { kind: "struct", value: {} };
+    }
+  });
+
+  $effect(() => {
+    const cid = tab.draft.connection_id;
+    if (cid == null || connectionStore.status(cid) !== "connected") return;
+    void discoveryStore.refresh(cid);
+    const interval = setInterval(() => {
+      void discoveryStore.refresh(cid);
+      forgetUnresolvedSchemas();
+    }, 1500);
+    return () => clearInterval(interval);
+  });
+
+  $effect(() => {
+    const canonical = requestsStore.get(tab.requestId);
+    const snapshot = JSON.stringify($state.snapshot(tab.draft));
+    tabsStore.setDirty(tab.requestId, canonical ? snapshot !== JSON.stringify(canonical) : true);
+  });
+
+  $effect(() => {
+    subscriptionStore.setActive(tab.requestId, source.status === "active");
+    return () => subscriptionStore.setActive(tab.requestId, false);
+  });
+
+  function setConnection(value: string) {
+    tab.draft.connection_id = value === "" ? null : Number(value);
+  }
+
+  function refreshDiscovery() {
+    if (tab.draft.connection_id != null)
+      void discoveryStore.refresh(tab.draft.connection_id, { force: true });
+  }
+
+  function errorText(err: unknown): string {
+    if (err instanceof Error) return err.message;
+    if (err && typeof err === "object") {
+      const record = err as { message?: unknown; kind?: unknown };
+      if (typeof record.message === "string" && record.message.length > 0) {
+        return typeof record.kind === "string"
+          ? `${record.kind}: ${record.message}`
+          : record.message;
+      }
+      try {
+        return JSON.stringify(err);
+      } catch {
+        return String(err);
+      }
+    }
+    return String(err);
+  }
+
+  async function callService() {
+    serviceResponse = "";
+    actionError = null;
+    calling = true;
+    try {
+      const response = await pipelineHub.callService(
+        sessionId!,
+        target,
+        $state.snapshot(tab.draft.input) as Value,
+      );
+      serviceResponse = valuePreviewText(response);
+    } catch (err) {
+      actionError = errorText(err);
+    } finally {
+      calling = false;
+    }
+  }
+
+  function sendActionGoal() {
+    feedbackText = "";
+    resultText = "";
+    actionError = null;
+    goalId = null;
+    calling = true;
+    const goal = new Promise<void>((resolve, reject) => {
+      pipelineHub
+        .sendActionGoal(
+          sessionId!,
+          target,
+          $state.snapshot(tab.draft.input) as Value,
+          (envelope) => {
+            if (envelope.kind === "feedback") {
+              feedbackText = valuePreviewText(envelope.value);
+            } else if (envelope.kind === "result") {
+              resultText = valuePreviewText(envelope.value);
+            } else if (envelope.kind === "error") {
+              reject(new Error(envelope.message));
+            } else if (envelope.kind === "closed") {
+              resolve();
+            }
+          },
+        )
+        .then((id) => {
+          goalId = id;
+        })
+        .catch(reject);
+    });
+    void goal
+      .catch((err) => {
+        actionError = errorText(err);
+      })
+      .finally(() => {
+        calling = false;
+      });
+  }
+
+  function cancelGoal() {
+    if (goalId) void pipelineHub.cancelActionGoal(goalId);
+  }
 </script>
 
-{#if $activeItem}
-	{@const spec = specifics[$activeItem.data.type]}
-	<div class="flex flex-col h-full bg-bg-main">
-		<div class="p-4 border-b border-border flex-shrink-0 space-y-4">
-			<div class="flex items-center gap-3 group">
-				<input
-					type="text"
-					value={$activeItem.data.name}
-					oninput={(e) =>
-						updateActiveItemField("name", e.currentTarget.value)}
-					class="text-xl font-bold bg-transparent focus:outline-none focus:bg-bg-input rounded p-1 -m-1 border border-transparent focus:border-accent hover:border-border transition-colors"
-				/>
-				<Edit2
-					size={16}
-					class="text-text-disabled opacity-0 group-hover:opacity-100 transition-opacity"
-				/>
-				<div
-					class="ml-auto flex items-center gap-1 bg-bg-input border border-border rounded-lg p-0.5"
-				>
-					<button
-						onclick={() => deleteRequest($activeItem.id)}
-						class="p-2 rounded-md hover:bg-red-500/20 text-text-dimmer hover:text-red-400 transition-colors"
-					>
-						<Trash2 size={16} />
-					</button>
-					<button
-						onclick={saveActiveItem}
-						disabled={!$activeItem.isDirty}
-						class="flex items-center gap-2 bg-accent text-white px-3 py-1.5 rounded-md hover:bg-accent-dark disabled:bg-bg-disabled disabled:text-text-disabled disabled:cursor-not-allowed text-sm font-semibold transition-colors"
-					>
-						<Save size={16} /> Save
-					</button>
-				</div>
-			</div>
+<div class="editor">
+  <div class="head">
+    <div class="title-row">
+      <div class="title-block">
+        <input class="name" bind:value={tab.draft.name} placeholder="Request name" />
+      </div>
+      <div class="title-actions">
+        <Button
+          variant="ghost"
+          onclick={() => tabsStore.revert(tab.requestId)}
+          disabled={!tab.dirty}
+        >
+          <RotateCcw size={14} /> Revert
+        </Button>
+        <Button onclick={() => tabsStore.save(tab.requestId)} disabled={!tab.dirty}>
+          <Save size={14} /> Save
+        </Button>
+      </div>
+    </div>
 
-			<div
-				class="flex items-center gap-2 bg-bg-input border border-border rounded-lg p-1"
-			>
-				<div class="flex-shrink-0 w-28">
-					<Dropdown
-						options={requestTypeOptions}
-						bind:selected={localRequestType}
-						buttonClass={getBadgeClass(localRequestType)}
-						showFocusRing={false}
-						compact={true}
-					/>
-				</div>
-				<div class="flex-grow">
-					<input
-						type="text"
-						placeholder={spec.placeholder}
-						value={$activeItem.data.target}
-						oninput={(e) =>
-							updateActiveItemField("target", e.currentTarget.value)}
-						class="w-full bg-transparent px-3 py-2.5 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-					/>
-				</div>
-				<button
-					disabled={!$activeItem.data.target ||
-						$activeItem.data.target.trim() === ""}
-					class="text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 font-semibold text-sm transition-colors mr-1 w-36 bg-green-500/80 hover:bg-green-500 disabled:bg-bg-disabled disabled:text-text-disabled disabled:cursor-not-allowed"
-				>
-					{#if spec.Icon}
-						<spec.Icon size={16} />
-					{/if}
-					{spec.actionText}
-				</button>
-			</div>
-			<div>
-				<label
-					class="text-xs font-semibold text-text-dimmer block mb-1.5 ml-1"
-					>Message Type</label
-				>
-				<div class="w-full">
-					<input
-						type="text"
-						placeholder="e.g., sensor_msgs/LaserScan"
-						value={$activeItem.data.interface}
-						oninput={(e) =>
-							updateActiveItemField("interface", e.currentTarget.value)}
-						class="w-full bg-bg-input border border-border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed"
-					/>
-				</div>
-			</div>
-		</div>
+    <RequestBar
+      {tab}
+      {connectionValue}
+      {connectionOptions}
+      {suggestions}
+      {locked}
+      {canRun}
+      pending={calling}
+      bind:running
+      {setConnection}
+      onkind={(kind) => (tab.draft.kind = kind)}
+      ontarget={(value) => (tab.draft.target = value)}
+      onrefresh={refreshDiscovery}
+      oncall={callService}
+      onsend={sendActionGoal}
+      oncancel={cancelGoal}
+    />
 
-		<div class="p-4 overflow-y-auto flex-grow scrollbar-custom">
-			<div class="space-y-3">
-				<h3 class="text-sm font-semibold text-text-dimmer mb-2">
-					Message Fields
-				</h3>
-				<p class="text-sm text-text-disabled">
-					Select a valid message type to see its fields.
-				</p>
-			</div>
-		</div>
-	</div>
-{/if}
+    <div class="status-line">
+      <span class="status-dot {dotClass}"></span>
+      <span class="status-text">{displayStatus}</span>
+      {#if displaySchema}<span class="schema mono">{displaySchema}</span>{/if}
+      {#if displayError}<span class="err">{displayError}</span>{/if}
+    </div>
+  </div>
 
+  <div class="body scrollbar-custom">
+    {#if tab.draft.kind === "topic"}
+      <TopicResult
+        {source}
+        {rawText}
+        view={tab.draft.visualization ?? null}
+        onviewchange={persistView}
+      />
+    {:else if tab.draft.kind === "service"}
+      <div class="section-card form-card">
+        <div class="form-head"><span class="section-label">REQUEST</span></div>
+        <div class="form-body">
+          {#if requestMessage}
+            <FormRenderer message={requestMessage} bind:value={tab.draft.input} />
+          {:else}
+            <p class="hint">Pick a service target on a connection to load its request fields.</p>
+          {/if}
+        </div>
+      </div>
+      {#if serviceResponse}
+        <ResultPanel label="RESPONSE" text={serviceResponse} />
+      {/if}
+    {:else if tab.draft.kind === "action"}
+      <div class="section-card form-card">
+        <div class="form-head"><span class="section-label">GOAL</span></div>
+        <div class="form-body">
+          {#if goalMessage}
+            <FormRenderer message={goalMessage} bind:value={tab.draft.input} />
+          {:else}
+            <p class="hint">Pick an action target on a connection to load its goal fields.</p>
+          {/if}
+        </div>
+      </div>
+      <div class="result-grid">
+        <ResultPanel label="FEEDBACK" text={feedbackText} />
+        <ResultPanel label="RESULT" text={resultText} />
+      </div>
+    {:else}
+      <div class="placeholder">Parameter requests aren't supported yet.</div>
+    {/if}
+  </div>
+</div>
+
+<style>
+  .editor {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+  .head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+  }
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .title-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+  .name {
+    flex: 1;
+    min-width: 0;
+    padding: 4px 8px;
+    margin-left: -4px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--color-text-main);
+    font-size: 20px;
+    font-weight: 700;
+    cursor: text;
+    transition:
+      background 0.12s ease,
+      border-color 0.12s ease;
+  }
+  .name::placeholder {
+    color: var(--color-text-disabled);
+  }
+  .name:hover {
+    background: var(--color-bg-hover);
+  }
+  .name:focus {
+    outline: none;
+    background: var(--color-bg-input);
+    border-color: var(--color-accent);
+  }
+  .title-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+  }
+  .status-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--color-text-dimmer);
+    min-height: 16px;
+  }
+  .status-text {
+    text-transform: capitalize;
+  }
+  .mono {
+    font-family: var(--font-mono);
+  }
+  .schema {
+    color: var(--color-text-disabled);
+  }
+  .err {
+    color: var(--color-danger);
+    font-family: var(--font-mono);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    overflow: auto;
+  }
+  .form-card {
+    flex: none;
+  }
+  .form-head {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .form-body {
+    padding: 16px;
+  }
+  .hint {
+    font-size: 12px;
+    color: var(--color-text-disabled);
+    margin: 0;
+  }
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+  }
+  .placeholder {
+    border: 1px dashed var(--color-border);
+    border-radius: 10px;
+    padding: 24px;
+    color: var(--color-text-disabled);
+    font-size: 13px;
+  }
+</style>

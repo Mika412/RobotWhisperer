@@ -1,0 +1,28 @@
+[package]
+name = "rw-transport"
+version = "0.1.0"
+edition.workspace = true
+description = "Transport trait and shared task and time helpers"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+rw-wire = { path = "../rw-wire" }
+async-trait = "0.1"
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+tokio = { workspace = true, features = ["rt", "sync", "time"] }
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+tokio = { workspace = true, features = ["macros", "sync"] }
+wasm-bindgen-futures = "0.4"
+gloo-timers = { version = "0.3", features = ["futures"] }
+futures-util = "0.3"
+uuid = { version = "1", features = ["v4", "serde", "js"] }
+getrandom = { version = "0.2", features = ["js"] }

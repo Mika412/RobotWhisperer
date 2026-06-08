@@ -1,0 +1,12 @@
+[package]
+name = "rw-codec-rosmsg"
+version = "0.1.0"
+edition.workspace = true
+description = "ROS 1 rosmsg binary codec for canonical values"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+thiserror = { workspace = true }

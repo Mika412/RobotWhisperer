@@ -1,0 +1,17 @@
+[package]
+name = "rw-canonical"
+version = "0.1.0"
+edition.workspace = true
+description = "Transport-independent canonical value and schema model"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+sha2 = "0.10"
+
+[dev-dependencies]
+proptest = "1"

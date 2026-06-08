@@ -1,0 +1,17 @@
+[package]
+name = "rw-wire"
+version = "0.1.0"
+edition.workspace = true
+description = "Binary wire envelope for Tauri IPC frames"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+ciborium = "0.2"
+thiserror = { workspace = true }
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+web-sys = { version = "0.3", features = ["Window", "Performance"] }

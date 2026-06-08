@@ -1,0 +1,32 @@
+[package]
+name = "rw-wasm"
+version = "0.1.0"
+edition.workspace = true
+description = "wasm-bindgen facade over the canonical pipeline"
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+rw-canonical = { path = "../rw-canonical" }
+rw-core = { path = "../rw-core", default-features = false, features = ["wasm-storage"] }
+rw-pipeline = { path = "../rw-pipeline" }
+rw-transport = { path = "../rw-transport" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["sync", "macros"] }
+
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+console_error_panic_hook = "0.1"
+serde-wasm-bindgen = "0.6"
+web-sys = { version = "0.3", features = ["console"] }
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+uuid = { version = "1", features = ["v4", "serde", "js"] }
+getrandom = { version = "0.2", features = ["js"] }
+
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+uuid = { version = "1", features = ["v4", "serde"] }

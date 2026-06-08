@@ -1,51 +1,105 @@
 <script lang="ts">
-	import { Sun, Moon } from '@lucide/svelte';
-	import { modalStore } from '$lib/stores/modalStore.svelte';
-	import { settings } from '$lib/stores/settingsStore.svelte';
-	import Dropdown from '$lib/components/common/Dropdown.svelte';
+  import { Trash2 } from "@lucide/svelte";
+  import { modalStore } from "$lib/stores/modalStore.svelte";
+  import { settings } from "$lib/stores/settingsStore.svelte";
+  import { workspaceRpc } from "$lib/core/workspaceRpc";
+  import { THEMES } from "$lib/themes";
+  import Select from "$lib/components/common/Select.svelte";
+  import Button from "$lib/components/common/Button.svelte";
 
-	const themes = {
-		dark: { name: 'Dark', icon: Moon },
-		light: { name: 'Light', icon: Sun },
-		'one-dark': { name: 'One Dark', icon: Moon },
-		dracula: { name: 'Dracula', icon: Moon },
-		nord: { name: 'Nord', icon: Moon },
-		'solarized-light': { name: 'Solarized Light', icon: Sun },
-		'rose-pine-dawn': { name: 'Rosé Pine Dawn', icon: Sun }
-	};
+  const themeOptions = THEMES.map(({ id, name }) => ({ value: id, label: name }));
 
-	const themeOptions = Object.entries(themes).map(([key, { name }]) => ({
-		key,
-		name
-	}));
+  let clearing = $state(false);
+  let clearError = $state<string | null>(null);
+
+  async function clearCache() {
+    const ok = confirm(
+      "Wipe all workspace state?\n\nThis deletes every request, collection, connection and " +
+        "schema from the workspace database. The theme preference is preserved, and the app " +
+        "reloads afterwards.",
+    );
+    if (!ok) return;
+    clearing = true;
+    clearError = null;
+    try {
+      await workspaceRpc.clearWorkspaceStorage();
+      location.reload();
+    } catch (err) {
+      clearError = err instanceof Error ? err.message : String(err);
+      clearing = false;
+    }
+  }
 </script>
 
-<div class="p-6">
-	<h2 class="mb-6 text-xl font-bold text-text-main">Settings</h2>
-	<div class="space-y-6">
-		<div>
-			<label for="theme-select" class="mb-2 block text-sm font-medium text-text-dimmer"
-				>Theme</label
-			>
-			<Dropdown options={themeOptions} bind:selected={settings.theme} />
-		</div>
-		<div>
-			<label for="ws-url" class="mb-2 block text-sm font-medium text-text-dimmer"
-				>WebSocket URL</label
-			>
-			<input
-				id="ws-url"
-				type="text"
-				class="h-11 w-full rounded-lg border border-border bg-bg-input px-3 py-2 text-text-main focus:outline-none focus:ring-2 focus:ring-accent"
-			/>
-		</div>
-	</div>
-	<div class="mt-8 flex justify-end">
-		<button
-			onclick={modalStore.close}
-			class="rounded-lg bg-accent px-6 py-2 font-semibold text-white transition-colors hover:bg-accent-dark"
-		>
-			Done
-		</button>
-	</div>
+<div class="settings">
+  <h2 class="title">Settings</h2>
+
+  <div class="field">
+    <span class="label">Theme</span>
+    <Select
+      value={settings.theme}
+      options={themeOptions}
+      onchange={(value) => (settings.theme = value)}
+    />
+  </div>
+
+  <div class="field section">
+    <span class="label">Workspace</span>
+    <Button variant="danger" disabled={clearing} onclick={clearCache}>
+      <Trash2 size={14} />
+      {clearing ? "Clearing…" : "Clear workspace data"}
+    </Button>
+    <p class="hint">
+      Wipes every request, collection, connection and schema. The theme is preserved; the app
+      reloads after.
+    </p>
+    {#if clearError}<p class="err">{clearError}</p>{/if}
+  </div>
+
+  <div class="footer">
+    <Button onclick={modalStore.close}>Done</Button>
+  </div>
 </div>
+
+<style>
+  .settings {
+    padding: 24px;
+  }
+  .title {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text-main);
+  }
+  .field {
+    margin-bottom: 20px;
+  }
+  .label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-dimmer);
+  }
+  .section {
+    border-top: 1px solid var(--color-border);
+    padding-top: 16px;
+  }
+  .hint {
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--color-text-disabled);
+  }
+  .err {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--color-danger);
+    font-family: var(--font-mono);
+  }
+  .footer {
+    margin-top: 28px;
+    display: flex;
+    justify-content: flex-end;
+  }
+</style>

@@ -1,0 +1,10 @@
+build
+.svelte-kit
+package
+node_modules
+src-tauri/target
+src/lib/wasm/generated
+bun.lock
+
+# Robot asset data (URDF / meshes / configs), not ours to format
+static/assets/

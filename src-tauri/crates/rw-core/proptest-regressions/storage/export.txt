@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc f9d25273b5fde1b5e643b34545cd6015e6149f1a89348194c8b2100491aebb3e # shrinks to workspace = Workspace { connections: [], collections: [], requests: [], schemas: [] }

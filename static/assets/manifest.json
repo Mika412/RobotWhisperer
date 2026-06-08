@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Allegro Hand",
+    "directory": "allegro_hand",
+    "urdf": "allegro_hand.urdf"
+  },
+  {
+    "name": "Dexee",
+    "directory": "dexee",
+    "urdf": "0x02000105.urdf"
+  },
+  {
+    "name": "Dexee Chiral Left",
+    "directory": "dexee_chiral_left",
+    "urdf": "0x02000109.urdf"
+  },
+  {
+    "name": "Dexee Chiral Right",
+    "directory": "dexee_chiral_right",
+    "urdf": "0x02000107.urdf"
+  },
+  {
+    "name": "Franka Panda",
+    "directory": "franka_panda",
+    "urdf": "franka_panda.urdf"
+  },
+  {
+    "name": "Iiwa14",
+    "directory": "iiwa14",
+    "urdf": "iiwa14.urdf"
+  },
+  {
+    "name": "Ur10e",
+    "directory": "ur10e",
+    "urdf": "ur10e.urdf"
+  }
+]

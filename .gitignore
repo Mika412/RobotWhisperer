@@ -15,3 +15,7 @@ src/lib/wasm/generated/
 
 # coverage output
 /coverage
+
+# python
+__pycache__/
+*.pyc

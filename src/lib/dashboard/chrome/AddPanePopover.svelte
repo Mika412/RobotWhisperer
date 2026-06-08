@@ -1,5 +1,14 @@
 <script lang="ts">
-  import { LineChart, Camera, Boxes, ScrollText, Square, Hand, type Icon } from "@lucide/svelte";
+  import {
+    LineChart,
+    Camera,
+    Boxes,
+    ScrollText,
+    Square,
+    Hand,
+    Bot,
+    type Icon,
+  } from "@lucide/svelte";
   import { panesByGroup, type PaneDescriptor } from "$lib/dashboard/registry/paneRegistry";
   import { draggable } from "$lib/dashboard/layout/dragState.svelte";
 
@@ -17,6 +26,7 @@
     if (type.includes("image")) return Camera;
     if (type.includes("point") || type.includes("cloud")) return Boxes;
     if (type.includes("raw")) return ScrollText;
+    if (type.includes("robot")) return Bot;
     if (type.includes("hand") || type.includes("finger")) return Hand;
     return Square;
   }

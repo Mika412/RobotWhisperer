@@ -34,7 +34,8 @@
     "@tauri-apps/api": "^2",
     "tailwind-scrollbar": "^4.0.2",
     "three": "^0.184.0",
-    "uplot": "^1.6.32"
+    "uplot": "^1.6.32",
+    "urdf-loader": "^0.12.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

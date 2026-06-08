@@ -9,9 +9,11 @@
   import { requestsStore } from "$lib/stores/requestsStore.svelte";
   import { registerBuiltinPanes } from "$lib/dashboard/registry/builtins";
   import { registerExamplePanes } from "$lib/dashboard/examples";
+  import { registerRobotPanes } from "$lib/dashboard/robot";
 
   registerBuiltinPanes();
   registerExamplePanes();
+  registerRobotPanes();
 
   onMount(() => {
     void requestsStore.load();

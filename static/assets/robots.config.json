@@ -1,0 +1,79 @@
+{
+  "materialPresets": {
+    "plastic_matte": { "metalness": 0, "roughness": 0.58, "envMapIntensity": 0.9 },
+    "plastic_glossy": {
+      "metalness": 0,
+      "roughness": 0.26,
+      "clearcoat": 1,
+      "clearcoatRoughness": 0.12,
+      "envMapIntensity": 1.1
+    },
+    "plastic_dark": {
+      "metalness": 0.08,
+      "roughness": 0.42,
+      "clearcoat": 0.6,
+      "clearcoatRoughness": 0.22,
+      "envMapIntensity": 1
+    },
+    "metal_brushed": { "metalness": 1, "roughness": 0.4, "envMapIntensity": 1.35 },
+    "metal_polished": { "metalness": 1, "roughness": 0.16, "envMapIntensity": 1.55 },
+    "rubber": { "metalness": 0, "roughness": 0.86, "envMapIntensity": 0.5 }
+  },
+  "robots": {
+    "ur10e": {
+      "displayName": "UR10e",
+      "brand": "Universal Robots",
+      "orientation": [-90, 0, 0],
+      "materials": { "default": "auto" }
+    },
+    "franka_panda": {
+      "displayName": "Franka Panda",
+      "brand": "Franka Emika",
+      "orientation": [-90, 0, 0],
+      "materials": { "default": "plastic_glossy" }
+    },
+    "iiwa14": {
+      "displayName": "KUKA LBR iiwa 14",
+      "brand": "KUKA",
+      "orientation": [-90, 0, 0],
+      "materials": {
+        "default": "plastic_glossy",
+        "byMaterial": {
+          "Orange": "plastic_glossy",
+          "Grey": "metal_brushed",
+          "Silver": "metal_polished",
+          "Black": "plastic_dark"
+        }
+      }
+    },
+    "allegro_hand": {
+      "displayName": "Allegro Hand",
+      "brand": "Wonik Robotics",
+      "orientation": [-90, 0, 0],
+      "materials": {
+        "byMaterial": {
+          "black": "plastic_dark",
+          "white": "metal_brushed"
+        }
+      }
+    },
+    "dexee": {
+      "displayName": "Shadow DEX-EE",
+      "brand": "Shadow Robot Company",
+      "orientation": [-90, 0, 180],
+      "materials": { "default": "auto" }
+    },
+    "dexee_chiral_left": {
+      "displayName": "Shadow DEX-EE (Left)",
+      "brand": "Shadow Robot Company",
+      "orientation": [-135, 0, 180],
+      "materials": { "default": "auto" }
+    },
+    "dexee_chiral_right": {
+      "displayName": "Shadow DEX-EE (Right)",
+      "brand": "Shadow Robot Company",
+      "orientation": [-135, 0, 180],
+      "materials": { "default": "auto" }
+    }
+  }
+}
